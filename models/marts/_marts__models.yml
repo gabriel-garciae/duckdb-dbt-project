@@ -1,0 +1,75 @@
+version: 2
+
+models:
+  - name: mrt_cost_per_km
+    description: |
+      Mart de negócio: Custo por Quilômetro (CPK)
+      
+      Responde à pergunta: "Quanto custa cada veículo por quilômetro rodado?"
+      
+      Arquitetura:
+      - Consome int_fct_telemetry_daily (já processado incrementalmente)
+      - Consome int_fct_maintenance_costs (custos de manutenção)
+      - Foca apenas em calcular métrica de negócio (CPK)
+      
+      Fórmula: CPK = Total de Custos no período / Total de KM rodados no período
+    columns:
+      - name: vehicle_id
+        description: "Identificador do veículo"
+        tests:
+          - not_null
+      - name: plate
+        description: "Placa do veículo"
+      - name: type
+        description: "Tipo do veículo"
+      - name: period_start
+        description: "Data de início do período"
+      - name: period_end
+        description: "Data de fim do período"
+      - name: total_costs
+        description: "Total de custos no período"
+      - name: total_km_driven
+        description: "Total de quilômetros rodados no período"
+      - name: cost_per_km
+        description: "Custo por quilômetro (CPK) = Total Costs / Total KM"
+        tests:
+          - not_null
+
+  - name: mrt_fleet_availability
+    description: |
+      Mart de negócio que calcula disponibilidade mensal da frota.
+      
+      Responde à pergunta de negócio: "Qual é a taxa de disponibilidade da minha frota por mês?"
+      
+      Estratégia:
+      1. Identifica todos os meses onde há atividade (manutenções)
+      2. Para cada veículo/mês, calcula dias em manutenção (apenas dias do mês)
+      3. Calcula dias disponíveis = total_days - maintenance_days
+      4. Calcula taxa de disponibilidade = (available_days / total_days) * 100
+      
+      Agrega dados diários do modelo intermediário (int_fct_vehicle_availability) em métricas mensais,
+      calculando total de dias, dias disponíveis, dias em manutenção e taxa de disponibilidade.
+    columns:
+      - name: vehicle_id
+        description: "Identificador do veículo"
+        tests:
+          - not_null
+      - name: plate
+        description: "Placa do veículo"
+      - name: type
+        description: "Tipo do veículo"
+      - name: period_start
+        description: "Data de início do período"
+      - name: period_end
+        description: "Data de fim do período"
+      - name: total_days
+        description: "Total de dias no período"
+      - name: available_days
+        description: "Dias disponíveis (não em manutenção)"
+      - name: maintenance_days
+        description: "Dias em manutenção"
+      - name: availability_rate
+        description: "Taxa de disponibilidade (%) = (Available Days / Total Days) * 100"
+        tests:
+          - not_null
+

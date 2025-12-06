@@ -1,0 +1,51 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Tabelas raw do Data Lake"
+    schema: raw
+    tables:
+      - name: raw_vehicles
+        description: "Tabela raw de veículos"
+        columns:
+          - name: vehicle_id
+            description: "Identificador único do veículo"
+          - name: plate
+            description: "Placa do veículo"
+          - name: type
+            description: "Tipo do veículo (Truck, Van, Car)"
+          - name: status
+            description: "Status do veículo (Active, Sold, Totaled)"
+
+      - name: raw_maintenance_costs
+        description: "Tabela raw de custos de manutenção"
+        columns:
+          - name: maintenance_id
+            description: "Identificador único da manutenção"
+          - name: vehicle_id
+            description: "Identificador do veículo"
+          - name: cost_type
+            description: "Tipo de custo (Preventiva ou Corretiva)"
+          - name: amount
+            description: "Valor do serviço"
+          - name: entry_date
+            description: "Data de entrada na oficina"
+          - name: return_date
+            description: "Data de saída da oficina (pode ser NULL)"
+
+      - name: raw_telemetry
+        description: "Tabela raw de telemetria GPS (alta frequência)"
+        columns:
+          - name: event_id
+            description: "Identificador único do evento"
+          - name: vehicle_id
+            description: "Identificador do veículo"
+          - name: timestamp
+            description: "Timestamp do evento"
+          - name: odometer_value
+            description: "Valor acumulado do odômetro em KM"
+          - name: engine_status
+            description: "Status do motor (true/false)"
+          - name: speed
+            description: "Velocidade atual"
+

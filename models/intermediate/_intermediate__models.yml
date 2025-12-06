@@ -1,0 +1,98 @@
+version: 2
+
+models:
+  - name: int_dim_vehicles
+    description: "Dimensão de veículos com informações enriquecidas. Baseada em stg_vehicles."
+    columns:
+      - name: vehicle_id
+        description: "Identificador único do veículo"
+        tests:
+          - unique
+          - not_null
+      - name: plate
+        description: "Placa do veículo"
+      - name: type
+        description: "Tipo do veículo"
+      - name: status
+        description: "Status do veículo"
+
+  - name: int_fct_maintenance_costs
+    description: "Fato de custos de manutenção com cálculos de duração e flags. Baseada em stg_maintenance_costs."
+    columns:
+      - name: maintenance_id
+        description: "Identificador único da manutenção"
+        tests:
+          - unique
+          - not_null
+      - name: vehicle_id
+        description: "Identificador do veículo"
+        tests:
+          - not_null
+      - name: cost_type
+        description: "Tipo de custo"
+      - name: amount
+        description: "Valor do serviço"
+      - name: entry_date
+        description: "Data de entrada"
+      - name: return_date
+        description: "Data de saída"
+      - name: maintenance_days
+        description: "Número de dias em manutenção"
+      - name: is_closed
+        description: "Flag indicando se a manutenção está fechada (return_date não é NULL)"
+
+  - name: int_fct_telemetry_daily
+    description: |
+      Fato agregado de telemetria por dia e veículo. Agrega dados de alta frequência em métricas diárias.
+      
+      Contexto:
+      - 5 bilhões de linhas na raw_telemetry
+      - Objetivo: Processamento diário < 1 hora
+      
+      Estratégias implementadas:
+      1. Agregação Diária: Reduz volume de 5 bilhões eventos (1 por veículo/dia)
+      2. Lookback Window (Late Arriving Data): Reprocessa últimos N dias (padrão: 7 dias) para capturar dados atrasados dos rastreadores, configurável via var 'lookback_days'
+      3. Filtro Incremental: Processa apenas período necessário (últimos N dias), não reprocessa todo o histórico
+      4. Delete+Insert Strategy: Atualiza apenas registros afetados (veículo/dia).
+
+    columns:
+      - name: vehicle_id
+        description: "Identificador do veículo"
+        tests:
+          - not_null
+      - name: date
+        description: "Data do evento"
+        tests:
+          - not_null
+      - name: total_km_driven
+        description: "Total de quilômetros rodados no dia"
+      - name: total_events
+        description: "Total de eventos de telemetria no dia"
+      - name: avg_speed
+        description: "Velocidade média no dia"
+      - name: max_speed
+        description: "Velocidade máxima no dia"
+      - name: engine_on_events
+        description: "Número de eventos com motor ligado"
+
+  - name: int_fct_vehicle_availability
+    description: |
+      Fato de disponibilidade de veículos por dia. 
+      Retorna apenas dias em manutenção
+      Para saber se está disponível: se não está aqui, está disponível!
+    columns:
+      - name: vehicle_id
+        description: "Identificador do veículo"
+        tests:
+          - not_null
+      - name: date
+        description: "Data de referência"
+        tests:
+          - not_null
+      - name: is_available
+        description: "Flag indicando se o veículo estava disponível (true) ou em manutenção (false)"
+        tests:
+          - not_null
+      - name: maintenance_id
+        description: "ID da manutenção se o veículo estava em manutenção (NULL se disponível)"
+

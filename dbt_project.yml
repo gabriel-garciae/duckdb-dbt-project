@@ -1,0 +1,42 @@
+name: 'duckdb_dbt_project'
+version: '1.0.0'
+config-version: 2
+
+profile: 'duckdb_dbt_project'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  duckdb_dbt_project:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: table
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: marts
+
+seeds:
+  duckdb_dbt_project:
+    +quote_columns: false
+
+vars:
+  date_format: '%Y-%m-%d'
+  timestamp_format: '%Y-%m-%d %H:%M:%S'
+  # Configuração para materialização incremental de telemetria
+  # Lookback window em dias para capturar late arriving data
+  # Ajuste conforme necessidade: mais dias = mais completude, mas processamento mais lento
+  lookback_days: 7
+
