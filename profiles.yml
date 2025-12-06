@@ -4,5 +4,5 @@ duckdb_dbt_project:
     dev:
       type: duckdb
       path: 'data/duckdb_dbt_project.duckdb'
-      schema: ''  # Schema vazio força uso direto dos schemas customizados
+      schema: ''
 
