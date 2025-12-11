@@ -67,7 +67,7 @@ select
                 ((va.total_days - va.maintenance_days)::float / va.total_days::float) * 100,
                 0
             )
-        else 100
+        else 100 -- caso o veiculo nao existisse em certo mês, consideramos 100% de disponibilidade ()
     end as availability_rate
 from vehicles v
 inner join availability_monthly va

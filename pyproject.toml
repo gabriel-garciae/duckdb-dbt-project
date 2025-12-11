@@ -1,17 +1,21 @@
-[tool.poetry]
+[project]
 name = "duckdb-dbt-project"
 version = "0.1.0"
 description = "Projeto dbt para análise de frota utilizando DuckDB"
-authors = ["gabriel-garciae <eng.gabrielgevangelista@gmail.com>"]
+authors = [
+    {name = "gabriel-garciae", email = "eng.gabrielgevangelista@gmail.com"}
+]
 readme = "README.md"
 requires-python = ">=3.12"
+dependencies = [
+    "dbt-core>=1.7.0",
+    "dbt-duckdb>=1.7.0",
+    "duckdb>=0.9.0",
+    "pandas>=2.0.0",
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
-dbt-core = ">=1.7.0"
-dbt-duckdb = ">=1.7.0"
-duckdb = ">=0.9.0"
-pandas = ">=2.0.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
